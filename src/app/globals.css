@@ -1,26 +1,117 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ===== DESIGN TOKENS ===== */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--color-paper);
+  --color-foreground: var(--color-ink);
+  --font-display: var(--font-playfair);
+  --font-ui: var(--font-dm-sans);
+  --font-mono: var(--font-jetbrains);
+  --radius-calendar: 1.25rem;
+  --radius-day: 0.5rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ===== LIGHT THEME (default) ===== */
+:root,
+[data-theme="light"] {
+  --color-paper:        #F8F4EE;
+  --color-ink:          #1A1410;
+  --color-ink-muted:    #7A6E62;
+  --color-accent:       #2563EB;
+  --color-accent-warm:  #D4581A;
+  --color-selection-start: #1A3A6E;
+  --color-selection-end:   #1A3A6E;
+  --color-selection-mid:   rgba(37, 99, 235, 0.12);
+  --color-grid-line:    rgba(26, 20, 16, 0.10);
+  --color-card:         #FFFFFF;
+  --color-spiral:       #C0BAB0;
+}
+
+/* ===== DARK THEME ===== */
+[data-theme="dark"] {
+  --color-paper:        #0F0D0B;
+  --color-ink:          #F0EBE3;
+  --color-ink-muted:    #7A7065;
+  --color-accent:       #3B82F6;
+  --color-accent-warm:  #F97316;
+  --color-selection-start: #2563EB;
+  --color-selection-end:   #2563EB;
+  --color-selection-mid: rgba(59, 130, 246, 0.15);
+  --color-grid-line:    rgba(240, 235, 227, 0.10);
+  --color-card:         #1A1712;
+  --color-spiral:       #4A4540;
+}
+
+/* ===== GLOBAL STYLES ===== */
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  transition: background-color 400ms ease, color 400ms ease;
+}
+
+/* Smooth theme transitions for all themed properties */
+[data-theme] * {
+  transition: background-color 300ms ease, color 200ms ease, border-color 300ms ease;
+}
+
+/* ===== TODAY PULSE ANIMATION ===== */
+@keyframes todayPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.05); }
+}
+
+.today-pulse {
+  animation: todayPulse 2.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .today-pulse {
+    animation: none;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ===== SCROLLBAR STYLING ===== */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-ink-muted);
+  border-radius: 3px;
+}
+
+/* ===== PRINT STYLESHEET ===== */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  .spiral-binding,
+  .today-pulse,
+  button[aria-label*="theme"],
+  button[aria-label*="Navigate"],
+  button[aria-label*="Clear"],
+  button[aria-label*="Today"] {
+    display: none !important;
+  }
+
+  * {
+    animation: none !important;
+    transition: none !important;
+    box-shadow: none !important;
+  }
+
+  [data-theme] * {
+    transition: none !important;
+  }
+}
+
+/* ===== SELECTION COLORS ===== */
+::selection {
+  background: var(--color-accent);
+  color: white;
 }

@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🗓️ Interactive Wall Calendar
 
-## Getting Started
+An award-winning, production-grade interactive wall calendar built with Next.js, TypeScript, Tailwind CSS, and Framer Motion. Translates the tactile warmth of a physical spiral-bound wall calendar into a breathtaking digital experience.
 
-First, run the development server:
+## ✨ Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Wall Calendar Aesthetic** — Spiral binding, paper texture, curated hero images per month
+- **Date Range Selection** — Click-click range selection with live ghost preview on hover
+- **Integrated Notes** — Monthly notes + range-specific notes, persisted to localStorage
+- **Light/Dark Theme** — Smooth animated toggle with localStorage persistence
+- **Holiday Markers** — Indian + international holidays with colored dot indicators
+- **Dynamic Month Tints** — Subtle color shifts per month (warm summers, cool winters)
+- **Today Pulse** — Animated highlight ring on the current date
+- **Fully Responsive** — Desktop (side-by-side), tablet, and mobile (bottom sheet notes)
+- **Keyboard Accessible** — Full grid navigation with arrow keys, proper ARIA attributes
+- **Print Stylesheet** — Clean, printer-friendly output
+- **Reduced Motion** — Respects `prefers-reduced-motion` system preference
+
+## 🏗️ Architecture
+
+```
+src/
+├── app/              Layout + Page (Next.js App Router)
+├── components/
+│   ├── calendar/     CalendarRoot, Grid, Header, HeroImage, Notes, RangeBar, DayCell
+│   └── ui/           SpiralBind, PaperTexture, ThemeToggle
+├── hooks/            useCalendar, useRangeSelection, useNotes, useLocalStorage
+├── store/            Zustand store (calendarStore)
+├── lib/              dateUtils, constants, types
+└── styles/           globals.css
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Design Decisions
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Choice | Rationale |
+|--------|-----------|
+| **Zustand** | Minimal boilerplate, selector-based re-renders for perf, no Context overhead |
+| **date-fns** | Tree-shakeable, lightweight (~6KB for the functions used), no moment.js bloat |
+| **Framer Motion** | Physics-based animations with transform/opacity only for 60fps |
+| **CSS Custom Properties** | Theme system via `data-theme` attribute, instant theme switching |
+| **React.memo** | Applied on DayCell to prevent 42-cell re-renders on every hover |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 Getting Started
 
-## Learn More
+```bash
+# Install dependencies
+npm install
 
-To learn more about Next.js, take a look at the following resources:
+# Start development server
+npm run dev
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Production build
+npm run build
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Run linter
+npm run lint
+```
 
-## Deploy on Vercel
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📱 Responsive Breakpoints
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Breakpoint | Layout |
+|-----------|--------|
+| ≥ 1024px | Two-panel side-by-side (hero left, grid right) |
+| 768–1023px | Stacked: hero → grid → notes |
+| < 768px | Compact stacked with bottom sheet notes |
+
+## ♿ Accessibility
+
+- `role="grid"` / `role="gridcell"` / `role="columnheader"` semantics
+- `aria-label` on all interactive elements
+- `aria-selected` / `aria-disabled` states
+- Full keyboard navigation (Tab, Enter/Space, Arrow keys)
+- 4.5:1+ contrast ratios maintained across both themes
+- Reduced motion support
+
+## 🔮 Future Improvements
+
+- Drag-to-select range (mousedown → mousemove → mouseup)
+- Mini month overview component
+- Recurring event support
+- Export calendar as image/PDF
+- Internationalization (i18n) for month/day names
+- Backend sync via API
+
+## 📄 License
+
+MIT
