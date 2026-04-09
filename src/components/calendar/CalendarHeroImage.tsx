@@ -16,14 +16,14 @@ function CalendarHeroImageInner() {
   const key = `${year}-${month}`;
 
   return (
-    <div className="relative w-full aspect-[16/10] md:aspect-[4/3] lg:aspect-[3/4] overflow-hidden rounded-[var(--radius-calendar)]">
+    <div className="relative w-full h-full overflow-hidden">
       <AnimatePresence mode="wait">
         <motion.div
           key={key}
-          initial={reducedMotion ? undefined : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={reducedMotion ? undefined : { opacity: 0 }}
-          transition={{ duration: reducedMotion ? 0 : 0.6, ease: 'easeOut' }}
+          initial={reducedMotion ? undefined : { opacity: 0, scale: 1.03 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={reducedMotion ? undefined : { opacity: 0, scale: 0.98 }}
+          transition={{ duration: reducedMotion ? 0 : 0.5, ease: 'easeOut' }}
           className="absolute inset-0"
         >
           <Image
@@ -32,52 +32,72 @@ function CalendarHeroImageInner() {
             fill
             className="object-cover"
             priority
-            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 100vw, 40vw"
+            sizes="(max-width: 640px) 100vw, 560px"
           />
-          {/* Dark overlay for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+          {/* Gradient overlay for text readability at bottom */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
         </motion.div>
       </AnimatePresence>
 
-      {/* Chevron badge */}
+      {/* Inspirational quote overlay — bottom left */}
+      <div className="absolute bottom-0 left-0 right-0 z-10 p-3 sm:p-4 pb-14 sm:pb-16">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={key + '-quote'}
+            initial={reducedMotion ? undefined : { y: 12, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={reducedMotion ? undefined : { y: -8, opacity: 0 }}
+            transition={{ duration: reducedMotion ? 0 : 0.4, delay: 0.15, ease: 'easeOut' }}
+          >
+            <p className="font-display text-white text-xs sm:text-sm leading-snug italic drop-shadow-lg max-w-[65%]">
+              {image.quote}
+            </p>
+            <span className="block mt-1 text-white/60 text-[10px] sm:text-xs font-ui tracking-wide">
+              {image.author}
+            </span>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Chevron badge — year + month in bottom right */}
       <div className="absolute bottom-0 right-0 z-10">
         <svg
           viewBox="0 0 200 160"
-          className="w-[140px] h-[112px] md:w-[180px] md:h-[144px] lg:w-[200px] lg:h-[160px]"
+          className="w-[110px] h-[88px] sm:w-[150px] sm:h-[120px]"
           preserveAspectRatio="xMaxYMax meet"
         >
           <polygon
-            points="40,0 200,0 200,160 0,160 100,80"
+            points="50,0 200,0 200,160 0,160 110,80"
             fill="var(--color-accent)"
           />
           <text
             x="140"
-            y="70"
+            y="68"
             textAnchor="middle"
             fill="white"
-            fontSize="16"
+            fontSize="15"
             fontFamily="var(--font-mono)"
-            letterSpacing="4"
+            letterSpacing="3"
           >
             {year}
           </text>
           <text
             x="140"
-            y="110"
+            y="108"
             textAnchor="middle"
             fill="white"
-            fontSize="28"
+            fontSize="26"
             fontWeight="bold"
             fontFamily="var(--font-display)"
             letterSpacing="2"
           >
-            {format(currentMonth, 'MMM').toUpperCase()}
+            {format(currentMonth, 'MMMM').toUpperCase()}
           </text>
         </svg>
       </div>
 
-      {/* Credit */}
-      <span className="absolute bottom-2 left-3 text-[10px] text-white/60 font-ui">
+      {/* Photo credit */}
+      <span className="absolute top-2 left-2 text-[9px] text-white/40 font-ui z-10">
         Photo: {image.credit}
       </span>
     </div>

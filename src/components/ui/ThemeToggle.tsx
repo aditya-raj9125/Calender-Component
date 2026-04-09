@@ -27,7 +27,7 @@ export default function ThemeToggle() {
   return (
     <motion.button
       onClick={toggleTheme}
-      className="relative flex items-center justify-center w-10 h-10 rounded-full
+      className="relative flex items-center justify-center w-7 h-7 sm:w-9 sm:h-9 rounded-full
                  bg-[var(--color-card)] text-[var(--color-ink)] border border-[var(--color-grid-line)]
                  shadow-sm hover:shadow-md transition-shadow cursor-pointer"
       whileHover={{ scale: 1.1 }}

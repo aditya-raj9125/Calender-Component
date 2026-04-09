@@ -3,7 +3,7 @@
 /* ===== DESIGN TOKENS ===== */
 
 @theme inline {
-  --color-background: var(--color-paper);
+  --color-background: var(--color-wall);
   --color-foreground: var(--color-ink);
   --font-display: var(--font-playfair);
   --font-ui: var(--font-dm-sans);
@@ -26,6 +26,7 @@
   --color-grid-line:    rgba(26, 20, 16, 0.10);
   --color-card:         #FFFFFF;
   --color-spiral:       #C0BAB0;
+  --color-wall:         #E4DDD4;
 }
 
 /* ===== DARK THEME ===== */
@@ -41,13 +42,23 @@
   --color-grid-line:    rgba(240, 235, 227, 0.10);
   --color-card:         #1A1712;
   --color-spiral:       #4A4540;
+  --color-wall:         #141210;
 }
 
 /* ===== GLOBAL STYLES ===== */
-body {
-  background: var(--color-paper);
+html, body {
+  height: 100%;
+  background: var(--color-wall);
   color: var(--color-ink);
   transition: background-color 400ms ease, color 400ms ease;
+}
+
+/* Allow scroll on mobile for portrait layout */
+html {
+  overflow: hidden;
+}
+body {
+  overflow: hidden;
 }
 
 /* Smooth theme transitions for all themed properties */
@@ -71,9 +82,25 @@ body {
   }
 }
 
+/* ===== MOBILE RESPONSIVE ===== */
+
+/* Small phones — tighter grid cells */
+@media (max-width: 480px) {
+  [role="gridcell"] {
+    min-height: 36px !important;
+    min-width: 36px !important;
+    font-size: 0.8125rem !important;
+  }
+  [role="columnheader"] {
+    font-size: 0.625rem !important;
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
+  }
+}
+
 /* ===== SCROLLBAR STYLING ===== */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
@@ -89,7 +116,6 @@ body {
     background: white !important;
     color: black !important;
   }
-
   .spiral-binding,
   .today-pulse,
   button[aria-label*="theme"],
@@ -98,13 +124,11 @@ body {
   button[aria-label*="Today"] {
     display: none !important;
   }
-
   * {
     animation: none !important;
     transition: none !important;
     box-shadow: none !important;
   }
-
   [data-theme] * {
     transition: none !important;
   }
@@ -114,4 +138,11 @@ body {
 ::selection {
   background: var(--color-accent);
   color: white;
+}
+
+/* ===== TOUCH IMPROVEMENTS ===== */
+@media (hover: none) and (pointer: coarse) {
+  button {
+    -webkit-tap-highlight-color: transparent;
+  }
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useCalendarStore } from '@/store/calendarStore';
 import { useCalendar } from '@/hooks/useCalendar';
@@ -8,7 +8,6 @@ import { MONTH_TINTS } from '@/lib/constants';
 import { formatDateKey } from '@/lib/dateUtils';
 import SpiralBind from '@/components/ui/SpiralBind';
 import PaperTexture from '@/components/ui/PaperTexture';
-import ThemeToggle from '@/components/ui/ThemeToggle';
 import CalendarHeroImage from './CalendarHeroImage';
 import CalendarHeader from './CalendarHeader';
 import CalendarGrid from './CalendarGrid';
@@ -18,7 +17,7 @@ import CalendarRangeBar from './CalendarRangeBar';
 export default function CalendarRoot() {
   const currentMonth = useCalendarStore((s) => s.currentMonth);
   const theme = useCalendarStore((s) => s.theme);
-  const direction = useCalendarStore((s) => (s as any).direction); // Cast since I added it to ExtendedState
+  const direction = useCalendarStore((s) => (s as any).direction);
   const reducedMotion = useReducedMotion();
   const { grid, month } = useCalendar();
 
@@ -53,43 +52,52 @@ export default function CalendarRoot() {
 
   return (
     <motion.div
-      initial={reducedMotion ? undefined : { y: 20, opacity: 0 }}
+      initial={reducedMotion ? undefined : { y: 30, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: reducedMotion ? 0 : 0.6, ease: 'easeOut' }}
-      className="relative w-full max-w-[1400px] mx-auto"
+      transition={{ duration: reducedMotion ? 0 : 0.7, ease: 'easeOut' }}
+      className="relative w-full max-w-[560px] mx-auto flex flex-col z-10"
       data-month={month}
       style={{
-        // Subtle monthly tint
         ['--month-tint' as string]: theme === 'light' ? tint?.light : tint?.dark,
       }}
     >
-      {/* Paper card container */}
+      {/* Calendar card — portrait orientation like a real wall calendar */}
       <div
-        className="relative bg-[var(--color-paper)] rounded-[1.25rem] overflow-hidden
-                    shadow-[0_8px_40px_rgba(0,0,0,0.08),0_2px_8px_rgba(0,0,0,0.04)]"
+        className="calendar-card relative bg-[var(--color-paper)] overflow-hidden flex flex-col"
+        style={{
+          borderRadius: '0 0 12px 12px',
+          boxShadow: theme === 'light'
+            ? `
+              0 4px 8px rgba(0,0,0,0.06),
+              0 12px 24px rgba(0,0,0,0.08),
+              0 32px 64px rgba(0,0,0,0.10),
+              0 48px 96px rgba(0,0,0,0.06)
+            `
+            : `
+              0 4px 8px rgba(0,0,0,0.2),
+              0 12px 24px rgba(0,0,0,0.25),
+              0 32px 64px rgba(0,0,0,0.3),
+              0 48px 96px rgba(0,0,0,0.2)
+            `,
+        }}
       >
         <PaperTexture />
 
-        {/* Spiral binding at top */}
+        {/* Spiral binding at top of card */}
         <SpiralBind />
 
-        {/* Theme toggle */}
-        <div className="absolute top-12 right-4 z-20">
-          <ThemeToggle />
-        </div>
-
-        {/* Animated content area */}
-        <div style={{ perspective: '2000px' }}>
+        {/* Animated page content — flips when month changes */}
+        <div style={{ perspective: '2000px' }} className="flex-1 min-h-0 flex flex-col">
           <AnimatePresence mode="popLayout" initial={false} custom={direction}>
             <motion.div
               key={currentMonth.getTime()}
               custom={direction}
               variants={{
                 initial: (dir: number) => ({
-                  rotateX: dir > 0 ? 80 : -80,
+                  rotateX: dir > 0 ? 70 : -70,
                   opacity: 0,
-                  z: -200,
-                  y: dir > 0 ? 100 : -100,
+                  z: -150,
+                  y: dir > 0 ? 60 : -60,
                 }),
                 animate: {
                   rotateX: 0,
@@ -98,88 +106,72 @@ export default function CalendarRoot() {
                   y: 0,
                 },
                 exit: (dir: number) => ({
-                  rotateX: dir > 0 ? -80 : 80,
+                  rotateX: dir > 0 ? -70 : 70,
                   opacity: 0,
-                  z: -200,
-                  y: dir > 0 ? -100 : 100,
+                  z: -150,
+                  y: dir > 0 ? -60 : 60,
                 }),
               }}
               initial="initial"
               animate="animate"
               exit="exit"
               transition={{
-                duration: 0.7,
+                duration: 0.6,
                 ease: [0.4, 0, 0.2, 1],
-                opacity: { duration: 0.4 }
+                opacity: { duration: 0.35 }
               }}
               style={{
                 transformOrigin: 'top center',
                 backfaceVisibility: 'hidden',
               }}
+              className="flex flex-col"
             >
-              {/* Desktop layout: side-by-side */}
-              <div className="hidden lg:flex relative z-10">
-                {/* Left panel — Hero */}
-                <div className="w-[40%] p-8 border-r border-[var(--color-grid-line)]">
-                  <CalendarHeroImage />
-                </div>
+              {/* ========== TOP: Full-width Hero Image ========== */}
+              <div className="w-full aspect-[4/3] sm:aspect-[16/10] relative">
+                <CalendarHeroImage />
+              </div>
 
-                {/* Right panel — Header + Grid + Range Bar + Notes */}
-                <div className="w-[60%] p-8 flex flex-col">
+              {/* ========== BOTTOM: Calendar body ========== */}
+              <div className="flex flex-col relative z-10">
+                {/* Navigation header */}
+                <div className="px-3 sm:px-5">
                   <CalendarHeader />
                   <CalendarRangeBar />
-                  <div className="flex-1">
-                    <CalendarGrid noteKeys={noteKeys} />
-                  </div>
-                  {/* Notes shifted to right side below the dates */}
-                  <div className="mt-8 pt-8 border-t border-[var(--color-grid-line)]">
+                </div>
+
+                {/* Desktop/Tablet: Two-column layout — Notes left, Grid right */}
+                <div className="hidden sm:flex px-4 sm:px-5 pb-4 sm:pb-5 gap-4">
+                  {/* Left: Notes */}
+                  <div className="w-[32%] shrink-0 pt-1">
                     <CalendarNotes />
                   </div>
-                </div>
-              </div>
 
-              {/* Tablet layout */}
-              <div className="hidden md:flex lg:hidden flex-col relative z-10">
-                <div className="p-4">
-                  <CalendarHeroImage />
-                </div>
-                <div className="px-4 pb-2">
-                  <CalendarHeader />
-                  <CalendarRangeBar />
-                </div>
-                <div className="px-4 pb-4">
-                  <CalendarGrid noteKeys={noteKeys} />
-                </div>
-                <div className="px-4 pb-6">
-                  <CalendarNotes />
-                </div>
-              </div>
-
-              {/* Mobile layout */}
-              <div className="flex md:hidden flex-col relative z-10">
-                <div className="p-3">
-                  <CalendarHeroImage />
-                </div>
-                <div className="px-3 pb-1">
-                  <CalendarHeader />
-                  <CalendarRangeBar />
-                </div>
-                <div className="px-2 pb-3">
-                  <CalendarGrid noteKeys={noteKeys} />
+                  {/* Right: Grid */}
+                  <div className="flex-1 min-w-0">
+                    <CalendarGrid noteKeys={noteKeys} />
+                  </div>
                 </div>
 
-                {/* Mobile notes trigger */}
-                <button
-                  onClick={() => setMobileNotesOpen(true)}
-                  className="mx-3 mb-3 px-4 py-3 rounded-xl bg-[var(--color-card)]
-                             border border-[var(--color-grid-line)] text-[var(--color-ink)]
-                             font-ui text-sm text-left shadow-sm cursor-pointer
-                             hover:bg-[var(--color-selection-mid)] transition-colors"
-                  aria-label="Open notes panel"
-                >
-                  <span className="font-display italic text-[var(--color-ink-muted)]">Notes</span>
-                  <span className="text-[var(--color-ink-muted)] ml-2 text-xs">Tap to open</span>
-                </button>
+                {/* Mobile: Stacked layout */}
+                <div className="flex sm:hidden flex-col px-2 pb-3">
+                  <div className="pb-2">
+                    <CalendarGrid noteKeys={noteKeys} />
+                  </div>
+
+                  {/* Mobile notes trigger */}
+                  <button
+                    onClick={() => setMobileNotesOpen(true)}
+                    className="mx-1 px-4 py-2.5 rounded-xl bg-[var(--color-card)]
+                               border border-[var(--color-grid-line)] text-[var(--color-ink)]
+                               font-ui text-sm text-left shadow-sm cursor-pointer
+                               hover:bg-[var(--color-selection-mid)] transition-colors
+                               active:scale-[0.98]"
+                    aria-label="Open notes panel"
+                  >
+                    <span className="font-display italic text-[var(--color-ink-muted)]">Notes</span>
+                    <span className="text-[var(--color-ink-muted)] ml-2 text-xs">Tap to open</span>
+                  </button>
+                </div>
               </div>
             </motion.div>
           </AnimatePresence>
@@ -188,12 +180,12 @@ export default function CalendarRoot() {
 
       {/* Mobile bottom sheet for notes */}
       {mobileNotesOpen && (
-        <div className="md:hidden fixed inset-0 z-50 flex flex-col justify-end">
+        <div className="sm:hidden fixed inset-0 z-50 flex flex-col justify-end">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="absolute inset-0 bg-black/40"
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setMobileNotesOpen(false)}
           />
           {/* Sheet */}
@@ -205,7 +197,6 @@ export default function CalendarRoot() {
             className="relative bg-[var(--color-paper)] rounded-t-2xl px-5 py-4
                        max-h-[70vh] overflow-y-auto shadow-2xl"
           >
-            {/* Handle bar */}
             <div className="flex justify-center mb-4">
               <div className="w-10 h-1 rounded-full bg-[var(--color-ink-muted)] opacity-40" />
             </div>
@@ -213,7 +204,8 @@ export default function CalendarRoot() {
             <button
               onClick={() => setMobileNotesOpen(false)}
               className="w-full mt-4 py-3 rounded-xl bg-[var(--color-accent)] text-white
-                         font-ui text-sm font-medium cursor-pointer"
+                         font-ui text-sm font-medium cursor-pointer
+                         active:scale-[0.98]"
             >
               Done
             </button>
