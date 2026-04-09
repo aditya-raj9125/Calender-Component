@@ -14,7 +14,7 @@ An award-winning, production-grade interactive wall calendar built with Next.js,
 - **Fully Responsive** — Desktop (side-by-side), tablet, and mobile (bottom sheet notes)
 - **Keyboard Accessible** — Full grid navigation with arrow keys, proper ARIA attributes
 - **Print Stylesheet** — Clean, printer-friendly output
-- **Reduced Motion** — Respects `prefers-reduced-motion` system preferences
+- **Reduced Motion** — Respects `prefers-reduced-motion` system preference
 
 ## 🏗️ Architecture
 
