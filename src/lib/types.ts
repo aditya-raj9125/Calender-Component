@@ -11,6 +11,8 @@ export interface MonthImage {
   url: string;
   alt: string;
   credit: string;
+  quote?: string;
+  author?: string;
 }
 
 export type Theme = 'light' | 'dark';
